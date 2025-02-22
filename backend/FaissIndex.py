@@ -4,7 +4,7 @@ import json
 import os
 
 class FaissIndex:
-    def __init__(self, db_path="database", json_path="data_mapping.json"):
+    def __init__(self, db_path="database", json_path="data_mapping.json", dim=512):
         self.db_path = db_path
         self.json_path = json_path
         self.index = None
@@ -15,7 +15,7 @@ class FaissIndex:
         if os.path.exists(self.db_path):
             self.load_database()
         else:
-            self.init_database()
+            self.init_database(dim)
 
         # Load existing ID mapping if available
         if os.path.exists(self.json_path):
@@ -23,7 +23,7 @@ class FaissIndex:
                 self.id_mapping = json.load(f)
 
     def init_database(self, dim=512):
-        self.index = faiss.IndexIDMap2(faiss.IndexFlatL2(dim))
+        self.index = faiss.IndexIDMap2(faiss.IndexFlatIP(dim))  # Inner Product (IP) similarity, aka cosine similarity
         self.id_mapping = {}
         self._save_all()
         print("New FAISS database initialized.")
@@ -42,6 +42,9 @@ class FaissIndex:
 
     def add(self, vectors, texts):
         num_vectors = len(vectors)
+
+        print(f"Adding {num_vectors} vectors to database.")
+        print(f"Checking against {len(texts)} texts")
         if num_vectors != len(texts):
             raise ValueError("Number of vectors and texts must be the same.")
 
@@ -65,8 +68,12 @@ class FaissIndex:
         results = []
 
         for i, idx in enumerate(indices[0]):
+            idx = str(idx)
             if idx in self.id_mapping:
-                results.append((self.id_mapping.get(int(idx)), distances[0][i]))
+                results.append({
+                    "text": self.id_mapping.get(idx), 
+                    "similarity": float(distances[0][i])
+                })
         
         return results
 
@@ -103,40 +110,6 @@ class FaissIndex:
             json.dump(self.id_mapping, f, indent=4)
 
         print("Database and ID mapping saved.")
-
-def test_main():    
-
-    faiss_db = FaissIndex()
-
-    # Sample Text and Vectors (512-dimensional)
-    texts = [
-        "Hello, how are you?",
-        "What is the capital of France?",
-        "The quick brown fox jumps over the lazy dog."
-    ]
-    vectors = np.random.rand(len(texts), 512).astype("float32")  # Replace with real embeddings
-
-    faiss_db.add(vectors, texts)
-
-    query_vector = vectors[0]  # Use first text as query
-    results = faiss_db.search(query_vector, 2)
-
-    print("\nSearch Results:")
-    for rank, (text, distance) in enumerate(results, start=1):
-        print(f"Rank {rank}: '{text}' (Distance: {distance})")
-
-    # remove the first vector
-    faiss_db.remove_by_id(query_vector)
-
-    results_after_removal = faiss_db.search(query_vector, 2)
-    print("\nSearch Results After Deletion:")
-    for rank, (text, distance) in enumerate(results_after_removal, start=1):
-        print(f"Rank {rank}: '{text}' (Distance: {distance})")
-
-    faiss_db.delete_database()
-
-if __name__ == "__main__":
-    test_main()
 
 # Database and ID mapping saved.
 # New FAISS database initialized.
