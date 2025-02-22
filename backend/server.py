@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify
 
 from FaissIndex import FaissIndex
+from sentence_transformers import SentenceTransformer
 
 app = Flask(__name__)
 
-dimensions = 3
+dimensions = 768
 database = FaissIndex(dim=dimensions)
+
+model = SentenceTransformer('prdev/mini-gte')
 
 @app.route("/")
 def hello_world():
@@ -16,7 +19,6 @@ def hello_world():
 #   "text": "Hello World",
 #   "vector": [[1.0, 2.0, 3.0]]
 # }
-
 @app.route("/add", methods=["POST"])
 def add():
 
@@ -72,6 +74,44 @@ def search():
     
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
+    
+@app.route("/add_document", methods=["POST"])
+def add_document():
+    try:
+        document = request.files
+        print(document)
+
+        segments, embeddings = embed_document(document)
+        save_document(segments, embeddings)
+
+        return jsonify({"message": "Success, Vectors added", "text": segments}), 201
+    
+    except Exception as e:
+        return jsonify({"message": "Error", "error": str(e)}), 500
+
+def embed_document(document):
+    
+    segment_size = 200      # word count per segment
+    overlap_size = 20       # overlap size
+
+    # split the document into segments
+    segments = []
+
+    for i in range(0, len(document), segment_size - overlap_size):
+        start = i
+        end = min(len(document), i + segment_size)
+
+        segment = document[start:end]
+        segments.append(segment)
+
+    # embed the segments
+    embeddings = model.encode(segments)
+    return (segments, embeddings)
+
+def save_document(segments, embeddings):
+
+    for segment, embedding in zip(segments, embeddings):
+        database.add(embedding, segment)
 
 @app.route("/reset")
 def reset():
