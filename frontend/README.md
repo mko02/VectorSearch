@@ -1,6 +1,6 @@
-installs: 
-npm init -y                             
+installs:
+npm init -y
 
-npm install express next react react-dom
+npm install express next react react-dom pdf-parse
 
 running the file: npm dev run
