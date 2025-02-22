@@ -42,9 +42,8 @@ class FaissIndex:
 
     def add(self, vectors, texts):
         num_vectors = len(vectors)
-
         print(f"Adding {num_vectors} vectors to database.")
-        print(f"Checking against {len(texts)} texts")
+        
         if num_vectors != len(texts):
             raise ValueError("Number of vectors and texts must be the same.")
 

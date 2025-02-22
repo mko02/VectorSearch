@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from FaissIndex import FaissIndex
 from sentence_transformers import SentenceTransformer
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 dimensions = 768
 database = FaissIndex(dim=dimensions)
@@ -78,10 +80,15 @@ def search():
 @app.route("/add_document", methods=["POST"])
 def add_document():
     try:
-        document = request.files
-        print(document)
+        document = request.get_json()
 
-        segments, embeddings = embed_document(document)
+        document_filename = document['filename']
+        document_text = document['content']
+
+        print(document_filename)
+        print(document_text)
+
+        segments, embeddings = embed_document(document_filename, document_text)
         save_document(segments, embeddings)
 
         return jsonify({"message": "Success, Vectors added", "text": segments}), 201
@@ -89,7 +96,7 @@ def add_document():
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
 
-def embed_document(document):
+def embed_document(filename, document):
     
     segment_size = 200      # word count per segment
     overlap_size = 20       # overlap size
@@ -101,17 +108,17 @@ def embed_document(document):
         start = i
         end = min(len(document), i + segment_size)
 
-        segment = document[start:end]
+        segment = filename + " " + document[start:end]
         segments.append(segment)
+
+    print(f"Document split into {len(segments)} segments.")
 
     # embed the segments
     embeddings = model.encode(segments)
     return (segments, embeddings)
 
 def save_document(segments, embeddings):
-
-    for segment, embedding in zip(segments, embeddings):
-        database.add(embedding, segment)
+    database.add(embeddings, segments)
 
 @app.route("/reset")
 def reset():
@@ -124,4 +131,4 @@ def delete():
     return "Delete Successful!"
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=8000, debug=True)
