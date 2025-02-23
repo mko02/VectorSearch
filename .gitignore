@@ -9,3 +9,7 @@ frontend/public/uploads
 /backend/__pycache__
 backend/data_mapping.json
 backend/database
+
+node_modules/
+package-lock.json
+package.json
