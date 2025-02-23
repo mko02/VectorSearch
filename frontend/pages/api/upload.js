@@ -73,25 +73,6 @@ export default async function handler(req, res) {
 
 		console.log("Flask response:", flaskResponse);
 
-		// Try to send to Flask backend
-		try {
-			const flaskResponse = await fetch("http://localhost:8080/add_document", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					filename,
-					content: fileContent,
-				}),
-			});
-
-			console.log("Flask response status:", flaskResponse.status);
-		} catch (flaskError) {
-			console.error("Flask API error:", flaskError);
-			// Continue even if Flask API fails
-		}
-
 		// Return success response
 		console.log("Upload successful:", filename);
 		return res.status(200).json({
