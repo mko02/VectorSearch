@@ -71,13 +71,17 @@ export default async function handler(req, res) {
 			}),
 		});
 
-		console.log("Flask response:", flaskResponse);
+		const data = await flaskResponse.json();
+		console.log("Flask data:", data);
 
 		// Return success response
 		console.log("Upload successful:", filename);
 		return res.status(200).json({
 			filename: filename,
 			path: `/uploads/${filename}`,
+			thinking: data.thinking,
+			answer: data.answer,
+			document_segments: data.document_segments,
 		});
 	} catch (error) {
 		console.error("Upload error:", error);
