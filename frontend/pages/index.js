@@ -14,6 +14,9 @@ export default function Home() {
 	const fileInputRef = useRef(null);
 	const [previewUrl, setPreviewUrl] = useState(null);
 	const [showTagModal, setShowTagModal] = useState(false);
+
+	const [showTagView, setShowTagView] = useState(true);
+
 	const [tags, setTags] = useState([
 		{
 			name: "Customer Satisfaction",
@@ -53,34 +56,42 @@ export default function Home() {
 
 			{/* Left sidebar */}
 			<div style={{ display: "flex", flex: 1 }}>
-				<Documents
-					selectedFile={selectedFile}
-					setSelectedFile={setSelectedFile}
-					files={files}
-					setFiles={setFiles}
-					fileInputRef={fileInputRef}
-					setPreviewUrl={setPreviewUrl}
-					handleFileClick={handleFileClick}
-				/>
+				{showTagView && (
+					<Documents
+						selectedFile={selectedFile}
+						setSelectedFile={setSelectedFile}
+						files={files}
+						setFiles={setFiles}
+						fileInputRef={fileInputRef}
+						setPreviewUrl={setPreviewUrl}
+						handleFileClick={handleFileClick}
+					/>
+				)}
 
 				{/* Main content */}
-				<div
-					style={{
-						flex: 1,
-						padding: "30px",
-						display: "flex",
-						flexDirection: "column",
-						background:
-							"linear-gradient(135deg, rgba(245, 208, 254, 0.15) 0%, rgba(147, 197, 253, 0.15) 100%)",
-						gap: "20px",
-					}}
-				>
-					<SearchBar />
-					<DocPreviewMain previewUrl={previewUrl} />
-				</div>
-
+				{showTagView && (
+					<div
+						style={{
+							flex: 1,
+							padding: "30px",
+							display: "flex",
+							flexDirection: "column",
+							background:
+								"linear-gradient(135deg, rgba(245, 208, 254, 0.15) 0%, rgba(147, 197, 253, 0.15) 100%)",
+							gap: "20px",
+						}}
+					>
+						<SearchBar />
+						<DocPreviewMain previewUrl={previewUrl} />
+					</div>
+				)}
 				{/* Right sidebar */}
-				<TagsList tags={tags} setShowTagModal={setShowTagModal} />
+				<TagsList
+					tags={tags}
+					setShowTagModal={setShowTagModal}
+					showTagView={showTagView}
+					setShowTagView={setShowTagView}
+				/>
 			</div>
 
 			{/* Tag Modal */}
