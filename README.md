@@ -8,19 +8,18 @@ VectorSearch is a cutting-edge platform developed by Crossentropy that fuses adv
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Usage](#usage)
-- [Architecture](#architecture)
-- [Use Cases](#use-cases)
-- [How It Works](#how-it-works)
-- [Challenges and Accomplishments](#challenges-and-accomplishments)
-- [What's Next](#whats-next)
-- [License](#license)
-- [Our Team](#our-team)
-- [Links](#links)
-
+- [📝 Overview](#overview)
+- [✨ Features](#features)
+- [🔧 Technologies Used](#technologies-used)
+- [🚀 Usage](#usage)
+- [🏗️ Architecture](#architecture)
+- [📊 Use Cases](#use-cases)
+- [⚙️ How It Works](#how-it-works)
+- [🏆 Challenges and Accomplishments](#challenges-and-accomplishments)
+- [🔮 What's Next](#whats-next)
+- [📄 License](#license)
+- [👥 Our Team](#our-team)
+- [🔗 Links](#links)
 ---
 
 ## Overview
