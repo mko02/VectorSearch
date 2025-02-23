@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 function Documents({
 	selectedFile,
 	setSelectedFile,
@@ -42,6 +44,21 @@ function Documents({
 			event.target.value = "";
 		}
 	};
+
+	useEffect(() => {
+		const fetchFiles = async () => {
+			try {
+				const res = await fetch("/api/fetchFiles");
+				const data = await res.json();
+				// Assuming the API returns an object with a "files" array.
+				setFiles(data.files);
+			} catch (error) {
+				console.error("Error fetching files:", error);
+			}
+		};
+
+		fetchFiles();
+	}, [setFiles]);
 
 	return (
 		<div
