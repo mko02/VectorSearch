@@ -97,6 +97,15 @@ For financial institutions like Capital One:
 
 ---
 
+## Team Members
+
+- **Max Ko:** Frontend Client UI + Backend
+- **Yashwanth Alluri:** Frontend Client UI
+- **Pranav Devarinti:** AI Model Creation 
+- **Bryce Pardo:** Writeups + Slides + Video
+
+---
+
 ## Challenges and Accomplishments
 
 ### Challenges
@@ -106,7 +115,7 @@ For financial institutions like Capital One:
 
 ### Accomplishments
 
-- **Ambitious Scope:** Successfully fine-tuned a large-scale model during a hackathon—a rare feat.
+- **Ambitious Scope:** Successfully fine-tuned a large-scale model during a hackathon-a-thon.
 - **Innovative Integration:** Demonstrated the effective use of a reasoning model in conjunction with an embedding model to enhance search capabilities.
 - **Real-World Impact:** Developed a platform that addresses critical challenges in industries requiring precise, on-premise data handling.
 
