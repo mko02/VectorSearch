@@ -13,3 +13,5 @@ backend/database
 node_modules/
 package-lock.json
 package.json
+
+backend/Miniconda3-latest-MacOSX-x86_64.sh

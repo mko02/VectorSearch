@@ -3,4 +3,4 @@ npm init -y
 
 npm install express next react react-dom pdf-parse
 
-running the file: npm dev run
+running the file: npm run dev

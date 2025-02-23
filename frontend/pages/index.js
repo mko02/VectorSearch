@@ -85,6 +85,21 @@ export default function Home() {
 						<DocPreviewMain previewUrl={previewUrl} />
 					</div>
 				)}
+				{!showTagView && (
+					<div
+						style={{
+							flex: 1,
+							padding: "30px",
+							display: "flex",
+							flexDirection: "column",
+							background:
+								"linear-gradient(135deg, rgba(245, 208, 254, 0.15) 0%, rgba(147, 197, 253, 0.15) 100%)",
+							gap: "20px",
+						}}
+					>
+						<DocPreviewMain previewUrl={previewUrl} />
+					</div>
+				)}
 				{/* Right sidebar */}
 				<TagsList
 					tags={tags}
