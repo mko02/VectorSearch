@@ -1,9 +1,6 @@
-function TagsList({ tags, setShowTagModal }) {
+function TagsList({ tags, setShowTagModal, showTagView, setShowTagView }) {
 	const handleTagClick = async (tagRequest) => {
-		if (!selectedFile) {
-			alert("Please select a document first");
-			return;
-		}
+		setShowTagView(!showTagView);
 
 		try {
 			const response = await fetch("/api/chat", {
@@ -27,8 +24,8 @@ function TagsList({ tags, setShowTagModal }) {
 			// Handle the response as needed
 			// You might want to display the results somewhere in the UI
 		} catch (error) {
-			console.error("Tag processing error:", error);
-			alert("Failed to process tag request");
+			// console.error("Tag processing error:", error);
+			// alert("Failed to process tag request");
 		}
 	};
 
