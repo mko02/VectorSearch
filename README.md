@@ -18,6 +18,7 @@ VectorSearch is a cutting-edge platform developed by Crossentropy that fuses adv
 - [Challenges and Accomplishments](#challenges-and-accomplishments)
 - [What's Next](#whats-next)
 - [License](#license)
+- [Our Team](#our-team)
 - [Links](#links)
 
 ---
@@ -97,7 +98,7 @@ For financial institutions like Capital One:
 
 ---
 
-## Team Members
+## Our Team
 
 - **Max Ko:** Frontend Client UI + Backend
 - **Yashwanth Alluri:** Frontend Client UI
