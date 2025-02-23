@@ -1,32 +1,21 @@
-function TagsList({ tags, setShowTagModal, showTagView, setShowTagView }) {
-	const handleTagClick = async (tagRequest) => {
-		setShowTagView(!showTagView);
+function TagsList({
+	tags,
+	setShowTagModal,
+	setShowChatView,
+	setChatText,
+	setDocumentSegments,
+	tagsInformation,
+	notification,
+}) {
+	const handleTagClick = async () => {
+		setShowChatView(true);
 
-		try {
-			const response = await fetch("/api/chat", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					message: tagRequest,
-					filename: selectedFile,
-				}),
-			});
+		const documentSegments = tagsInformation.document_segments;
+		const thinking = tagsInformation.thinking;
+		const answer = tagsInformation.answer;
 
-			if (!response.ok) {
-				throw new Error("Failed to process tag request");
-			}
-
-			const data = await response.json();
-			console.log("Tag response:", data);
-
-			// Handle the response as needed
-			// You might want to display the results somewhere in the UI
-		} catch (error) {
-			// console.error("Tag processing error:", error);
-			// alert("Failed to process tag request");
-		}
+		setDocumentSegments(documentSegments);
+		setChatText(thinking + answer);
 	};
 
 	return (
@@ -60,10 +49,23 @@ function TagsList({ tags, setShowTagModal, showTagView, setShowTagView }) {
 				{tags.map((tag, index) => (
 					<button
 						key={index}
-						onClick={() => handleTagClick(tag.request)}
-						style={tagStyle(tag.color)}
+						onClick={() => handleTagClick(tag)}
+						style={{ ...tagStyle(tag.color), position: "relative" }}
 					>
 						{tag.name}
+						{notification && index == 0 && (
+							<span
+								style={{
+									position: "absolute",
+									top: "5px",
+									right: "5px",
+									width: "10px",
+									height: "10px",
+									backgroundColor: "red",
+									borderRadius: "50%",
+								}}
+							/>
+						)}
 					</button>
 				))}
 			</div>

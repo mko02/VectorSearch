@@ -8,6 +8,8 @@ function Documents({
 	fileInputRef,
 	setPreviewUrl,
 	handleFileClick,
+	setTagsInformation,
+	setNotification,
 }) {
 	const handleNewFileUpload = () => {
 		fileInputRef.current.click();
@@ -34,6 +36,16 @@ function Documents({
 				setFiles((prevFiles) => [data.filename, ...prevFiles]);
 				setSelectedFile(data.filename);
 				setPreviewUrl(`/uploads/${data.filename}`);
+
+				// set tags information
+				setTagsInformation({
+					document_segments: data.document_segments,
+					thinking: data.thinking,
+					answer: data.answer,
+				});
+
+				setNotification(true);
+
 				event.target.value = "";
 			} else {
 				throw new Error(data.error || "Upload failed");

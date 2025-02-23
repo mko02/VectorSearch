@@ -18,6 +18,10 @@ documentLLM = None
 
 document_segment_saved = []
 
+tags = [
+    "What is the customer satisfaction?"
+]
+
 @app.route("/")
 def hello_world():
     return "<p>Welcome to VectorSearch</p>"
@@ -48,7 +52,20 @@ def add():
     
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
-    
+
+@app.route("/reset")
+def reset():
+    database.reset_database()
+    return "Reset Successful!"
+
+@app.route("/delete")
+def delete():
+    database.delete_database()
+    return "Delete Successful!"
+
+##########################################
+## endpoints actually used in the project
+
 @app.route("/add_document", methods=["POST"])
 def add_document():
     try:
@@ -63,10 +80,39 @@ def add_document():
         segments, embeddings = embed_document(document_filename, document_text)
         save_document(segments, embeddings)
 
-        return jsonify({"message": "Success, Vectors added", "text": segments}), 201
+        tags_response = get_tags_reasoning()
+        print(tags_response)
+
+        return tags_response, 201
     
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
+    
+def get_tags_reasoning():
+
+    documentLLM = DocumentLLM(tags[0])
+    response = documentLLM.reason()
+
+    query = response['query']
+    thinking = response['thinking']
+    
+    document_segment_saved = search_query_for_llm(query)
+
+    response = documentLLM.reason(document_segment_saved)
+    print(response)
+
+    while response['type'] != "end":
+        thinking = response['thinking']
+        query = response['query']
+        document_segment_saved = search_query_for_llm(query)
+    
+        response = documentLLM.reason(document_segment_saved)
+        print(response)
+
+    answer = response['answer']
+    print(answer)
+    return jsonify(
+        {"message": "end", "thinking": thinking, "answer": answer, "document_segments": document_segment_saved })
 
 # endpoint when user search in search bar
 # should call LLM API
@@ -161,16 +207,6 @@ def embed_query(query):
 
 def save_document(segments, embeddings):
     database.add(embeddings, segments)
-
-@app.route("/reset")
-def reset():
-    database.reset_database()
-    return "Reset Successful!"
-
-@app.route("/delete")
-def delete():
-    database.delete_database()
-    return "Delete Successful!"
 
 if __name__ == "__main__":
     app.run(port=8080, debug=True)

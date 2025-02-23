@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function SearchBar({ setThinking, setShowChatView, setDocumentSegments }) {
+function SearchBar({ setChatText, setShowChatView, setDocumentSegments }) {
 	const [chatInput, setChatInput] = useState("");
 
 	const handleSearchSubmit = async (e) => {
@@ -33,7 +33,7 @@ function SearchBar({ setThinking, setShowChatView, setDocumentSegments }) {
 
 			const thinking = data.thinking;
 			// add thinking to the thinking array
-			setThinking([...thinking]);
+			setChatText([...thinking]);
 
 			// Start the recursive search_continue calls
 			await handleSearchContinue();
@@ -61,7 +61,7 @@ function SearchBar({ setThinking, setShowChatView, setDocumentSegments }) {
 
 			const thinking = data.thinking;
 			// add thinking to the thinking array
-			setThinking([...thinking]);
+			setChatText([...thinking]);
 
 			if (data.message === "end") {
 				console.log("Final Thoughts:", data.thinking);
@@ -107,7 +107,7 @@ function SearchBar({ setThinking, setShowChatView, setDocumentSegments }) {
 					right: "10px", // Adjust position inside the input
 					top: "50%",
 					transform: "translateY(-50%)",
-					backgroundColor: "#007bff",
+					backgroundColor: "#d3d3d3",
 					color: "white",
 					border: "none",
 					borderRadius: "50%",

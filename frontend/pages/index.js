@@ -18,10 +18,17 @@ export default function Home() {
 	const [showTagModal, setShowTagModal] = useState(false);
 
 	const [showTagView, setShowTagView] = useState(true);
-	const [thinking, setThinking] = useState([]);
+	const [chatText, setChatText] = useState("");
 	const [showChatView, setShowChatView] = useState(false);
 
 	const [documentSegments, setDocumentSegments] = useState([]);
+	const [notification, setNotification] = useState(false);
+
+	const [tagsInformation, setTagsInformation] = useState({
+		document_segments: [],
+		thinking: "",
+		answer: "",
+	});
 
 	const [tags, setTags] = useState([
 		{
@@ -72,6 +79,8 @@ export default function Home() {
 							fileInputRef={fileInputRef}
 							setPreviewUrl={setPreviewUrl}
 							handleFileClick={handleFileClick}
+							setTagsInformation={setTagsInformation}
+							setNotification={setNotification}
 						/>
 					)}
 
@@ -90,7 +99,7 @@ export default function Home() {
 						>
 							{!showChatView && (
 								<SearchBar
-									setThinking={setThinking}
+									setChatText={setChatText}
 									setShowChatView={setShowChatView}
 									setDocumentSegments={setDocumentSegments}
 								/>
@@ -118,8 +127,11 @@ export default function Home() {
 						<TagsList
 							tags={tags}
 							setShowTagModal={setShowTagModal}
-							showTagView={showTagView}
-							setShowTagView={setShowTagView}
+							setShowChatView={setShowChatView}
+							setChatText={setChatText}
+							setDocumentSegments={setDocumentSegments}
+							tagsInformation={tagsInformation}
+							notification={notification}
 						/>
 					)}
 				</div>
@@ -131,7 +143,7 @@ export default function Home() {
 						<ThinkingView documentSegments={documentSegments} />
 					</div>
 					<div style={{ flex: 0.5 }}>
-						<Chat thinking={thinking} />
+						<Chat chatText={chatText} />
 					</div>
 				</div>
 			)}

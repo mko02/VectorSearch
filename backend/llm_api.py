@@ -44,7 +44,7 @@ class DocumentLLM:
         self.initial_query = initial_query
         self.chat_history = INITIAL_CHAT_INTERACTION
         self.steps = 0
-        self.max_steps = 2
+        self.max_steps = 1
 
     def reason(self, document_segments = None):
 

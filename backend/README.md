@@ -4,10 +4,11 @@
 Install dependencies:
 
 1. `conda install -c conda-forge flask`
+2. `conda install -c conda-forge flask-cors`
 
-2. `conda install -c conda-forge faiss`
-3. `conda install -c conda-forge transformers`
-4. `conda install -c conda-forge sentence-transformers`
+3. `conda install -c conda-forge faiss`
+4. `conda install -c conda-forge transformers`
+5. `conda install -c conda-forge sentence-transformers`
    if conda install fails, try `pip install sentence-transformers`
 
 To run the server:
