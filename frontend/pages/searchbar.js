@@ -3,6 +3,30 @@ import React, { useState } from "react";
 function SearchBar() {
 	const [chatInput, setChatInput] = useState("");
 
+	const handleSearchSubmit = async (e) => {
+		e.preventDefault();
+		console.log("Search submitted:", chatInput);
+
+		try {
+			const response = await fetch("http://localhost:8080/search_query", {
+				method: "POST", // Changed from GET to POST
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ query: chatInput }), // Sending data in body
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			const data = await response.json();
+			console.log("Search Results:", data);
+		} catch (error) {
+			console.error("Error fetching search results:", error);
+		}
+	};
+
 	return (
 		<div style={{ position: "relative", width: "100%" }}>
 			<input
@@ -21,6 +45,7 @@ function SearchBar() {
 				}}
 			/>
 			<button
+				onClick={handleSearchSubmit}
 				style={{
 					position: "absolute",
 					right: "10px", // Adjust position inside the input
