@@ -1,6 +1,7 @@
 import formidable from "formidable";
 import fs from "fs";
 import path from "path";
+import pdfParse from "pdf-parse";
 
 export const config = {
 	api: {
@@ -55,20 +56,22 @@ export default async function handler(req, res) {
 		const filename = file.originalFilename;
 		const filepath = file.filepath;
 
-		console.log("Processing file:", { filename, filepath });
+		const fileContent = await extractTextFromFile(filepath);
 
-		// Extract text from PDF
-		let fileContent = "";
-		if (filepath.toLowerCase().endsWith(".pdf")) {
-			try {
-				const pdfBuffer = fs.readFileSync(filepath);
-				const pdfData = await pdfParse(pdfBuffer);
-				fileContent = pdfData.text;
-			} catch (pdfError) {
-				console.error("PDF parsing error:", pdfError);
-				// Continue even if PDF parsing fails
-			}
-		}
+		// send post @app.route("/add_document", methods=["POST"])
+
+		const flaskResponse = await fetch("http://localhost:8080/add_document", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				filename,
+				content: fileContent,
+			}),
+		});
+
+		console.log("Flask response:", flaskResponse);
 
 		// Try to send to Flask backend
 		try {
@@ -95,12 +98,20 @@ export default async function handler(req, res) {
 			filename: filename,
 			path: `/uploads/${filename}`,
 		});
-
 	} catch (error) {
 		console.error("Upload error:", error);
-		return res.status(500).json({ 
-			error: "Upload failed", 
-			details: error.message 
+		return res.status(500).json({
+			error: "Upload failed",
+			details: error.message,
 		});
+	}
+}
+
+async function extractTextFromFile(filepath) {
+	// if pdf
+	if (filepath.endsWith(".pdf")) {
+		const pdfBuffer = fs.readFileSync(filepath);
+		const pdfData = await pdfParse(pdfBuffer);
+		return pdfData.text;
 	}
 }
