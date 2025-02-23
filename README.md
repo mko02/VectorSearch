@@ -121,12 +121,6 @@ For financial institutions like Capital One:
 
 ---
 
-## Contributing
-
-We welcome contributions from the community. For guidelines on how to get involved, please refer to our contribution documentation included in the repository.
-
----
-
 ## Links
 
 - **Devpost:** [https://devpost.com/software/crossentropy](https://devpost.com/software/crossentropy)
