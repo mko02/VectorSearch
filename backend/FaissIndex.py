@@ -34,6 +34,8 @@ class FaissIndex:
         with open(self.json_path, "r") as f:
             self.id_mapping = json.load(f)
 
+        print(self.index.ntotal)
+
         if len(self.id_mapping) != self.index.ntotal:
             raise ValueError("Number of IDs does not match database size.")
         
@@ -55,7 +57,10 @@ class FaissIndex:
 
         # Store in JSON mapping
         for i, text in zip(ids, texts):
-            self.id_mapping[int(i)] = text 
+            self.id_mapping[str(i)] = text 
+
+        print("new total", self.index.ntotal)
+        print(len(self.id_mapping))
 
         self._save_all()
         print(f"Added {num_vectors} vectors to database.")
@@ -74,7 +79,6 @@ class FaissIndex:
             if idx in self.id_mapping:
                 results.append({
                     "text": self.id_mapping.get(idx), 
-                    "similarity": float(distances[0][i])
                 })
         
         return results

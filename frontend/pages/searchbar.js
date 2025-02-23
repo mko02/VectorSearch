@@ -22,8 +22,46 @@ function SearchBar() {
 
 			const data = await response.json();
 			console.log("Search Results:", data);
+
+			const thinking = data.thinking;
+
+			// Start the recursive search_continue calls
+			await handleSearchContinue();
 		} catch (error) {
 			console.error("Error fetching search results:", error);
+		}
+	};
+
+	const handleSearchContinue = async () => {
+		try {
+			const response = await fetch("http://localhost:8080/search_continue", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: null,
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			const data = await response.json();
+			console.log("Search Continue Response:", data);
+
+			if (data.message === "end") {
+				console.log("Final Thoughts:", data.thinking);
+				console.log("Final Answer:", data.answer);
+			} else {
+				console.log("Continuing search...");
+				console.log("Thinking:", data.thinking);
+				console.log("Next Query:", data.query);
+
+				// Continue search with the next query
+				await handleSearchContinue();
+			}
+		} catch (error) {
+			console.error("Error in search_continue:", error);
 		}
 	};
 
