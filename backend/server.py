@@ -1,24 +1,27 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from FaissIndex import FaissIndex
+from llm_api import DocumentLLM
+
 from sentence_transformers import SentenceTransformer
 
 app = Flask(__name__)
+CORS(app)
 
 dimensions = 768
 database = FaissIndex(dim=dimensions)
 
 model = SentenceTransformer('prdev/mini-gte')
 
+documentLLM = None
+
+document_segment_saved = []
+
 @app.route("/")
 def hello_world():
     return "<p>Welcome to VectorSearch</p>"
 
-### Sample /add request
-# {
-#   "text": "Hello World",
-#   "vector": [[1.0, 2.0, 3.0]]
-# }
 @app.route("/add", methods=["POST"])
 def add():
 
@@ -64,30 +67,70 @@ def add_document():
     
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
-    
-### Sample /search request
-# {
-#   "vector": [1.0, 2.0, 3.0],
-#   "num_results": 1
-# }
-@app.route("/search", methods=["GET"])
-def search():
+
+# endpoint when user search in search bar
+# should call LLM API
+# either gets end of text, which ends the conversation
+# or gets a function call, which we then call the search_query_for_llm function
+@app.route("/search_query", methods=["POST"])
+def search_query():
+
+    print("search_query")
 
     try: 
+        global documentLLM
+        global document_segment_saved
+
         response = (request.get_json())
         print(response)
 
-        query = response['text']
-        num_results = response['num_results']
+        query = response['query']
+        documentLLM = DocumentLLM(query)
 
-        results = search_query(query, num_results)
+        response = documentLLM.reason()
+        print(response)
 
-        return jsonify(results)
+        query = response['query']
+        thinking = response['thinking']
+    
+        document_segment_saved = search_query_for_llm(query)
+
+        return jsonify({"message": "Success", "thinking": thinking}), 200
     
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
 
-def search_query(query, num_results):
+@app.route("/search_continue", methods=["POST"])
+def search_continue():
+
+    print("\nsearch_continue")
+
+    try:
+        global document_segment_saved
+        global documentLLM
+
+        print(document_segment_saved)
+
+        response = documentLLM.reason(document_segment_saved)
+        print(response)
+
+        type = response['type']
+        thinking = response['thinking']
+
+        if type == "end":
+            answer = response['answer']
+            print(answer)
+            return jsonify({"message": "end", "thinking": thinking, "answer": answer}), 200
+
+        query = response['query']
+        document_segment_saved = search_query_for_llm(query)
+
+        return jsonify({"message": "continue", "thinking": thinking}), 200
+    
+    except Exception as e:
+        return jsonify({"message": "Error", "error": str(e)}), 500
+
+def search_query_for_llm(query, num_results=5):
     vector = embed_query(query)
     return database.search(vector, num_results)
     
