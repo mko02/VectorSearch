@@ -95,9 +95,10 @@ def search_query():
     
         document_segment_saved = search_query_for_llm(query)
 
-        return jsonify({"message": "Success", "thinking": thinking}), 200
+        return jsonify({"message": "Success", "thinking": thinking, "document_segments": document_segment_saved}), 200
     
     except Exception as e:
+        print(e)
         return jsonify({"message": "Error", "error": str(e)}), 500
 
 @app.route("/search_continue", methods=["POST"])
@@ -125,7 +126,7 @@ def search_continue():
         query = response['query']
         document_segment_saved = search_query_for_llm(query)
 
-        return jsonify({"message": "continue", "thinking": thinking}), 200
+        return jsonify({"message": "continue", "thinking": thinking, "document_segments": document_segment_saved}), 200
     
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
