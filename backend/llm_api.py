@@ -163,17 +163,6 @@ class DocumentLLM:
         end_index = function_call.find("\"}", index)
         return function_call[index:end_index]
 
-if __name__ == "__main__":
-    # Initialize the DocumentLLM class with the initial query
-    document_llm = DocumentLLM("What is the capital of France?")
-
-    document_llm.reason()
-    document_llm.reason(["Paris is the capital of France."])
-    document_llm.reason(["Paris is the capital of France."])
-    document_llm.reason(["Paris is the capital of France."])
-    document_llm.reason()
-    
-
 # ask question
 # get question
 # send to embedding

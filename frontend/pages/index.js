@@ -7,6 +7,8 @@ import NavBar from "./NavBar";
 import Documents from "./Documents";
 import TagsList from "./TagsList";
 import AddTags from "./AddTags";
+import Chat from "./chat";
+import ThinkingView from "./ThinkingView";
 
 export default function Home() {
 	const [selectedFile, setSelectedFile] = useState(null);
@@ -16,6 +18,8 @@ export default function Home() {
 	const [showTagModal, setShowTagModal] = useState(false);
 
 	const [showTagView, setShowTagView] = useState(true);
+  const [thinking, setThinking] = useState([]);
+  const [showChatView, setShowChatView] = useState(false);
 
 	const [tags, setTags] = useState([
 		{
@@ -55,6 +59,7 @@ export default function Home() {
 			<NavBar />
 
 			{/* Left sidebar */}
+      {!showChatView && (
 			<div style={{ display: "flex", flex: 1 }}>
 				{showTagView && (
 					<Documents
@@ -81,11 +86,11 @@ export default function Home() {
 							gap: "20px",
 						}}
 					>
-						<SearchBar />
-						<DocPreviewMain previewUrl={previewUrl} />
+						{!showChatView && <SearchBar setThinking={setThinking} setShowChatView={setShowChatView} />}
+						{!showChatView && <DocPreviewMain previewUrl={previewUrl} />}
 					</div>
 				)}
-				{!showTagView && (
+				{!showTagView && !showChatView &&(
 					<div
 						style={{
 							flex: 1,
@@ -101,13 +106,27 @@ export default function Home() {
 					</div>
 				)}
 				{/* Right sidebar */}
+        { !showChatView && (
 				<TagsList
 					tags={tags}
 					setShowTagModal={setShowTagModal}
 					showTagView={showTagView}
 					setShowTagView={setShowTagView}
 				/>
+        )}
 			</div>
+      )}
+
+      {showChatView && (
+        <div style={{ display: "flex", flex: 1 }}>
+          <div style={{ flex: 0.5 }}>
+          <ThinkingView />
+          </div>
+          <div style={{ flex: 0.5 }}>
+          <Chat thinking={thinking} />
+          </div>
+        </div>
+      )}
 
 			{/* Tag Modal */}
 			{showTagModal && (
