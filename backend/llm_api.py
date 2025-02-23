@@ -22,16 +22,6 @@ chat_interaction = [
             '        },\n'
             '        "required": ["query"]\n'
             '    } \n'
-#            '    "name": "code",\n'
-#            '    "description": "a python instance with matplotlib for some simple figures",\n'
-#            '    "parameters": {\n'
-#            '        "type": "object",\n'
-#            '        "properties": {\n'
-#            '            "code": {"type": "string", "description": "The code to run"}\n'
-#            '        },\n'
-#            '        "required": ["code"]\n'
-#            '    }\n'
-#            '}'
         )
     },
     {
