@@ -1,4 +1,4 @@
-1. `conda create --name vectorsearch`
+1. `conda create --name vectorsearch python=3.10`
 2. `conda activate vectorsearch`
 
 Install dependencies:
