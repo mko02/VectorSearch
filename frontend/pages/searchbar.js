@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 
-function SearchBar() {
+function SearchBar({setThinking, setShowChatView}) {
 	const [chatInput, setChatInput] = useState("");
 
 	const handleSearchSubmit = async (e) => {
 		e.preventDefault();
 		console.log("Search submitted:", chatInput);
+		setShowChatView(true);
+		
+		// set 0.5 second delay
+		await new Promise(resolve => setTimeout(resolve, 500));
 
 		try {
 			const response = await fetch("http://localhost:8080/search_query", {
@@ -24,6 +28,8 @@ function SearchBar() {
 			console.log("Search Results:", data);
 
 			const thinking = data.thinking;
+			// add thinking to the thinking array
+			setThinking([...thinking]);
 
 			// Start the recursive search_continue calls
 			await handleSearchContinue();
@@ -49,6 +55,10 @@ function SearchBar() {
 			const data = await response.json();
 			console.log("Search Continue Response:", data);
 
+			const thinking = data.thinking;
+			// add thinking to the thinking array
+			setThinking([...thinking]);
+			
 			if (data.message === "end") {
 				console.log("Final Thoughts:", data.thinking);
 				console.log("Final Answer:", data.answer);
