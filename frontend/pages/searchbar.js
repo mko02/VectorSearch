@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 
-function SearchBar({setThinking, setShowChatView}) {
+function SearchBar({ setThinking, setShowChatView, setDocumentSegments }) {
 	const [chatInput, setChatInput] = useState("");
 
 	const handleSearchSubmit = async (e) => {
 		e.preventDefault();
 		console.log("Search submitted:", chatInput);
 		setShowChatView(true);
-		
+
 		// set 0.5 second delay
-		await new Promise(resolve => setTimeout(resolve, 500));
+		await new Promise((resolve) => setTimeout(resolve, 500));
 
 		try {
 			const response = await fetch("http://localhost:8080/search_query", {
@@ -26,6 +26,10 @@ function SearchBar({setThinking, setShowChatView}) {
 
 			const data = await response.json();
 			console.log("Search Results:", data);
+
+			// append to the document segments array
+			const documentSegments = data.document_segments;
+			setDocumentSegments([...documentSegments]);
 
 			const thinking = data.thinking;
 			// add thinking to the thinking array
@@ -58,7 +62,7 @@ function SearchBar({setThinking, setShowChatView}) {
 			const thinking = data.thinking;
 			// add thinking to the thinking array
 			setThinking([...thinking]);
-			
+
 			if (data.message === "end") {
 				console.log("Final Thoughts:", data.thinking);
 				console.log("Final Answer:", data.answer);
@@ -66,6 +70,10 @@ function SearchBar({setThinking, setShowChatView}) {
 				console.log("Continuing search...");
 				console.log("Thinking:", data.thinking);
 				console.log("Next Query:", data.query);
+
+				// append to the document segments array
+				const documentSegments = data.document_segments;
+				setDocumentSegments([...documentSegments]);
 
 				// Continue search with the next query
 				await handleSearchContinue();

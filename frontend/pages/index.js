@@ -18,8 +18,10 @@ export default function Home() {
 	const [showTagModal, setShowTagModal] = useState(false);
 
 	const [showTagView, setShowTagView] = useState(true);
-  const [thinking, setThinking] = useState([]);
-  const [showChatView, setShowChatView] = useState(false);
+	const [thinking, setThinking] = useState([]);
+	const [showChatView, setShowChatView] = useState(false);
+
+	const [documentSegments, setDocumentSegments] = useState([]);
 
 	const [tags, setTags] = useState([
 		{
@@ -59,74 +61,80 @@ export default function Home() {
 			<NavBar />
 
 			{/* Left sidebar */}
-      {!showChatView && (
-			<div style={{ display: "flex", flex: 1 }}>
-				{showTagView && (
-					<Documents
-						selectedFile={selectedFile}
-						setSelectedFile={setSelectedFile}
-						files={files}
-						setFiles={setFiles}
-						fileInputRef={fileInputRef}
-						setPreviewUrl={setPreviewUrl}
-						handleFileClick={handleFileClick}
-					/>
-				)}
+			{!showChatView && (
+				<div style={{ display: "flex", flex: 1 }}>
+					{showTagView && (
+						<Documents
+							selectedFile={selectedFile}
+							setSelectedFile={setSelectedFile}
+							files={files}
+							setFiles={setFiles}
+							fileInputRef={fileInputRef}
+							setPreviewUrl={setPreviewUrl}
+							handleFileClick={handleFileClick}
+						/>
+					)}
 
-				{/* Main content */}
-				{showTagView && (
-					<div
-						style={{
-							flex: 1,
-							padding: "30px",
-							display: "flex",
-							flexDirection: "column",
-							background:
-								"linear-gradient(135deg, rgba(245, 208, 254, 0.15) 0%, rgba(147, 197, 253, 0.15) 100%)",
-							gap: "20px",
-						}}
-					>
-						{!showChatView && <SearchBar setThinking={setThinking} setShowChatView={setShowChatView} />}
-						{!showChatView && <DocPreviewMain previewUrl={previewUrl} />}
-					</div>
-				)}
-				{!showTagView && !showChatView &&(
-					<div
-						style={{
-							flex: 1,
-							padding: "30px",
-							display: "flex",
-							flexDirection: "column",
-							background:
-								"linear-gradient(135deg, rgba(245, 208, 254, 0.15) 0%, rgba(147, 197, 253, 0.15) 100%)",
-							gap: "20px",
-						}}
-					>
-						<DocPreviewMain previewUrl={previewUrl} />
-					</div>
-				)}
-				{/* Right sidebar */}
-        { !showChatView && (
-				<TagsList
-					tags={tags}
-					setShowTagModal={setShowTagModal}
-					showTagView={showTagView}
-					setShowTagView={setShowTagView}
-				/>
-        )}
-			</div>
-      )}
+					{/* Main content */}
+					{showTagView && (
+						<div
+							style={{
+								flex: 1,
+								padding: "30px",
+								display: "flex",
+								flexDirection: "column",
+								background:
+									"linear-gradient(135deg, rgba(245, 208, 254, 0.15) 0%, rgba(147, 197, 253, 0.15) 100%)",
+								gap: "20px",
+							}}
+						>
+							{!showChatView && (
+								<SearchBar
+									setThinking={setThinking}
+									setShowChatView={setShowChatView}
+									setDocumentSegments={setDocumentSegments}
+								/>
+							)}
+							{!showChatView && <DocPreviewMain previewUrl={previewUrl} />}
+						</div>
+					)}
+					{!showTagView && !showChatView && (
+						<div
+							style={{
+								flex: 1,
+								padding: "30px",
+								display: "flex",
+								flexDirection: "column",
+								background:
+									"linear-gradient(135deg, rgba(245, 208, 254, 0.15) 0%, rgba(147, 197, 253, 0.15) 100%)",
+								gap: "20px",
+							}}
+						>
+							<DocPreviewMain previewUrl={previewUrl} />
+						</div>
+					)}
+					{/* Right sidebar */}
+					{!showChatView && (
+						<TagsList
+							tags={tags}
+							setShowTagModal={setShowTagModal}
+							showTagView={showTagView}
+							setShowTagView={setShowTagView}
+						/>
+					)}
+				</div>
+			)}
 
-      {showChatView && (
-        <div style={{ display: "flex", flex: 1 }}>
-          <div style={{ flex: 0.5 }}>
-          <ThinkingView />
-          </div>
-          <div style={{ flex: 0.5 }}>
-          <Chat thinking={thinking} />
-          </div>
-        </div>
-      )}
+			{showChatView && (
+				<div style={{ display: "flex", flex: 1 }}>
+					<div style={{ flex: 0.5 }}>
+						<ThinkingView documentSegments={documentSegments} />
+					</div>
+					<div style={{ flex: 0.5 }}>
+						<Chat thinking={thinking} />
+					</div>
+				</div>
+			)}
 
 			{/* Tag Modal */}
 			{showTagModal && (
