@@ -1,6 +1,6 @@
 # VectorSearch
 
-[Devpost Project Page](https://devpost.com/software/crossentropy) • [Huggingface Model Repo](https://huggingface.co/prdev/R1-Llama-8B-Function-Calling2) • [FAISS Repository](https://github.com/facebookresearch/faiss?tab=readme-ov-file)
+[Devpost Project Page](https://devpost.com/software/crossentropy) • [Huggingface Model Repo](https://huggingface.co/prdev/R1-Llama-8B-Function-Calling2) • [FAISS Repository](https://github.com/facebookresearch/faiss?tab=readme-ov-file) • [QTACK Embedding Model](https://prdev/mini-gte)
 
 VectorSearch is a cutting-edge platform developed by Crossentropy that fuses advanced reasoning models with embedding search technology. The system is designed to provide highly accurate, context-aware searches over unstructured data, making it especially valuable in sectors like insurance and finance where precision and security are paramount.
 
