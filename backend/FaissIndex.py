@@ -43,7 +43,7 @@ class FaissIndex:
     def add(self, vectors, texts):
         num_vectors = len(vectors)
         print(f"Adding {num_vectors} vectors to database.")
-        
+
         if num_vectors != len(texts):
             raise ValueError("Number of vectors and texts must be the same.")
 
@@ -63,6 +63,9 @@ class FaissIndex:
     def search(self, query_vector, num_results=3):
         distances, indices = self.index.search(
             np.array(query_vector, dtype="float32").reshape(1, -1), num_results)
+        
+        print(f"distances: {distances}")
+        print(f"indices: {indices}")
         
         results = []
 

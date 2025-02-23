@@ -1,11 +1,9 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 
 from FaissIndex import FaissIndex
 from sentence_transformers import SentenceTransformer
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 dimensions = 768
 database = FaissIndex(dim=dimensions)
@@ -47,35 +45,6 @@ def add():
     
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
-
-### Sample /search request
-# {
-#   "vector": [1.0, 2.0, 3.0],
-#   "num_results": 1
-# }
-@app.route("/search", methods=["GET"])
-def search():
-
-    try: 
-        response = (request.get_json())
-
-        vector = response['vector']
-        num_results = response['num_results']
-
-        # check if vector is valid
-        if len(vector) != dimensions:
-            return jsonify({"message": "Error", "error": f"Your vector dim must be {dimensions}"}), 400
-        
-        # num_results must be an integer
-        if not isinstance(num_results, int):
-            return jsonify({"message": "Error", "error": "num_results must be an integer"}), 400
-
-        results = database.search(vector, num_results)
-
-        return jsonify(results)
-    
-    except Exception as e:
-        return jsonify({"message": "Error", "error": str(e)}), 500
     
 @app.route("/add_document", methods=["POST"])
 def add_document():
@@ -95,7 +64,33 @@ def add_document():
     
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
+    
+### Sample /search request
+# {
+#   "vector": [1.0, 2.0, 3.0],
+#   "num_results": 1
+# }
+@app.route("/search", methods=["GET"])
+def search():
 
+    try: 
+        response = (request.get_json())
+        print(response)
+
+        query = response['text']
+        num_results = response['num_results']
+
+        results = search_query(query, num_results)
+
+        return jsonify(results)
+    
+    except Exception as e:
+        return jsonify({"message": "Error", "error": str(e)}), 500
+
+def search_query(query, num_results):
+    vector = embed_query(query)
+    return database.search(vector, num_results)
+    
 def embed_document(filename, document):
     
     segment_size = 200      # word count per segment
@@ -117,6 +112,9 @@ def embed_document(filename, document):
     embeddings = model.encode(segments)
     return (segments, embeddings)
 
+def embed_query(query):
+    return model.encode(query)
+
 def save_document(segments, embeddings):
     database.add(embeddings, segments)
 
@@ -131,4 +129,4 @@ def delete():
     return "Delete Successful!"
 
 if __name__ == "__main__":
-    app.run(port=8000, debug=True)
+    app.run(port=8080, debug=True)
