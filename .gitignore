@@ -5,6 +5,7 @@ frontend/.next
 frontend/package-lock.json
 frontend/yarn.lock
 frontend/public/uploads
+frontend/.env.local
 
 /backend/__pycache__
 backend/data_mapping.json

@@ -1,6 +1,15 @@
 import SearchBar from "./searchbar";
 
-function Chat({ chatText }) {
+function Chat({
+	chatText,
+	setChatText,
+	setShowChatView,
+	setDocumentSegments,
+	chatHistory,
+	setChatHistory,
+	disableSearch,
+	setDisableSearch,
+}) {
 	return (
 		<div
 			style={{
@@ -43,7 +52,15 @@ function Chat({ chatText }) {
 					width: "45%",
 				}}
 			>
-				<SearchBar />
+				<SearchBar
+					setChatText={setChatText}
+					setShowChatView={setShowChatView}
+					setDocumentSegments={setDocumentSegments}
+					chatHistory={chatHistory}
+					setChatHistory={setChatHistory}
+					disableSearch={disableSearch}
+					setDisableSearch={setDisableSearch}
+				/>
 			</div>
 		</div>
 	);
