@@ -177,6 +177,19 @@ def search_continue():
     except Exception as e:
         return jsonify({"message": "Error", "error": str(e)}), 500
 
+@app.route("/get_segment", methods=["POST"])
+def get_segment():
+
+    req = request.get_json()
+    query = req['query']
+    num_results = req['num_results']
+
+    vector = embed_query(query)
+    document_segment_saved = database.search(vector, num_results)
+
+    return jsonify({"message": "Success", "document_segments": document_segment_saved}), 200
+
+
 def search_query_for_llm(query, num_results=5):
     vector = embed_query(query)
     return database.search(vector, num_results)

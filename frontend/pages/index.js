@@ -20,6 +20,8 @@ export default function Home() {
 	const [showTagView, setShowTagView] = useState(true);
 	const [chatText, setChatText] = useState("");
 	const [showChatView, setShowChatView] = useState(false);
+	const [chatHistory, setChatHistory] = useState([]);
+	const [disableSearch, setDisableSearch] = useState(false);
 
 	const [documentSegments, setDocumentSegments] = useState([]);
 	const [notification, setNotification] = useState(false);
@@ -102,6 +104,10 @@ export default function Home() {
 									setChatText={setChatText}
 									setShowChatView={setShowChatView}
 									setDocumentSegments={setDocumentSegments}
+									chatHistory={chatHistory}
+									setChatHistory={setChatHistory}
+									disableSearch={disableSearch}
+									setDisableSearch={setDisableSearch}
 								/>
 							)}
 							{!showChatView && <DocPreviewMain previewUrl={previewUrl} />}
@@ -143,7 +149,16 @@ export default function Home() {
 						<ThinkingView documentSegments={documentSegments} />
 					</div>
 					<div style={{ flex: 0.5 }}>
-						<Chat chatText={chatText} />
+						<Chat
+							chatText={chatText}
+							setChatText={setChatText}
+							setShowChatView={setShowChatView}
+							setDocumentSegments={setDocumentSegments}
+							chatHistory={chatHistory}
+							setChatHistory={setChatHistory}
+							disableSearch={disableSearch}
+							setDisableSearch={setDisableSearch}
+						/>
 					</div>
 				</div>
 			)}
