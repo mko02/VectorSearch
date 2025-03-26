@@ -20,7 +20,8 @@ const INITIAL_CHAT_INTERACTION = {
 		'            "query": {"type": "string", "description": "The search query"}\n' +
 		"        },\n" +
 		'        "required": ["query"]\n' +
-		"    } \n",
+		"    }\n" +
+		"}\n",
 };
 
 function SearchBar({
@@ -141,7 +142,7 @@ function SearchBar({
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ message: updatedHistory }),
+			body: JSON.stringify({ messages: updatedHistory }),
 		});
 
 		if (!response.ok) {
