@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 	try {
 		const stream = await openai.chat.completions.create({
 			model: "tgi",
-			messages: req.body.message,
+			messages: req.body.messages,
 			stream: true,
 			top_p: 0.95,
 			temperature: 0.4,
