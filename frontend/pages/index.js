@@ -138,6 +138,10 @@ export default function Home() {
 							setDocumentSegments={setDocumentSegments}
 							tagsInformation={tagsInformation}
 							notification={notification}
+							disableSearch={disableSearch}
+							setDisableSearch={setDisableSearch}
+							chatHistory={chatHistory}
+							setChatHistory={setChatHistory}
 						/>
 					)}
 				</div>
