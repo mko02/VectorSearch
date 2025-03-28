@@ -11,6 +11,8 @@ export default async function handler(req, res) {
 		return res.status(405).json({ error: "Method not allowed" });
 	}
 
+	console.log("Chat Request:", req.body);
+
 	try {
 		const stream = await openai.chat.completions.create({
 			model: "tgi",

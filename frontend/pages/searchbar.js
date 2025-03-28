@@ -10,10 +10,10 @@ const INITIAL_CHAT_INTERACTION = {
 	role: "system",
 	content:
 		FUNCTION_CALL_INSTRUCTION +
-		"You are a helpful assistant with access to the following functions. Use them if required -\n" +
+		"Feel free to make <functioncall> when needing to access some kind of documents. You are a helpful assistant with access to the following functions. Use them if required -\n" +
 		"{\n" +
 		'    "name": "search",\n' +
-		'    "description": "search for an item in the internal company database",\n' +
+		'    "description": "search for an item in the  database",\n' +
 		'    "parameters": {\n' +
 		'        "type": "object",\n' +
 		'        "properties": {\n' +
@@ -23,6 +23,14 @@ const INITIAL_CHAT_INTERACTION = {
 		"    }\n" +
 		"}\n",
 };
+
+const user_input_pre_prompt =
+	"TOOL: This is the result that was returned from the search:\n";
+const user_input_post_prompt =
+	"Given the information, answer the initial question:";
+
+const user_context =
+	"USER CONTEXT: You are a part of a AI search-engine application. Use the search tool to answer queries. ";
 
 function SearchBar({
 	setChatText,
@@ -35,86 +43,6 @@ function SearchBar({
 }) {
 	const [chatInput, setChatInput] = useState("");
 
-	// const handleSearchSubmit = async (e) => {
-	// 	e.preventDefault();
-	// 	console.log("Search submitted:", chatInput);
-	// 	setShowChatView(true);
-
-	// 	// set 0.5 second delay
-	// 	await new Promise((resolve) => setTimeout(resolve, 500));
-
-	// 	try {
-	// 		const response = await fetch("http://localhost:8080/search_query", {
-	// 			method: "POST", // Changed from GET to POST
-	// 			headers: {
-	// 				"Content-Type": "application/json",
-	// 			},
-	// 			body: JSON.stringify({ query: chatInput }), // Sending data in body
-	// 		});
-
-	// 		if (!response.ok) {
-	// 			throw new Error(`HTTP error! Status: ${response.status}`);
-	// 		}
-
-	// 		const data = await response.json();
-	// 		console.log("Search Results:", data);
-
-	// 		// append to the document segments array
-	// 		const documentSegments = data.document_segments;
-	// 		setDocumentSegments([...documentSegments]);
-
-	// 		const thinking = data.thinking;
-	// 		// add thinking to the thinking array
-	// 		setChatText([...thinking]);
-
-	// 		// Start the recursive search_continue calls
-	// 		await handleSearchContinue();
-	// 	} catch (error) {
-	// 		console.error("Error fetching search results:", error);
-	// 	}
-	// };
-
-	// const handleSearchContinue = async () => {
-	// 	try {
-	// 		const response = await fetch("http://localhost:8080/search_continue", {
-	// 			method: "POST",
-	// 			headers: {
-	// 				"Content-Type": "application/json",
-	// 			},
-	// 			body: null,
-	// 		});
-
-	// 		if (!response.ok) {
-	// 			throw new Error(`HTTP error! Status: ${response.status}`);
-	// 		}
-
-	// 		const data = await response.json();
-	// 		console.log("Search Continue Response:", data);
-
-	// 		const thinking = data.thinking;
-	// 		// add thinking to the thinking array
-	// 		setChatText([...thinking]);
-
-	// 		if (data.message === "end") {
-	// 			console.log("Final Thoughts:", data.thinking);
-	// 			console.log("Final Answer:", data.answer);
-	// 		} else {
-	// 			console.log("Continuing search...");
-	// 			console.log("Thinking:", data.thinking);
-	// 			console.log("Next Query:", data.query);
-
-	// 			// append to the document segments array
-	// 			const documentSegments = data.document_segments;
-	// 			setDocumentSegments([...documentSegments]);
-
-	// 			// Continue search with the next query
-	// 			await handleSearchContinue();
-	// 		}
-	// 	} catch (error) {
-	// 		console.error("Error in search_continue:", error);
-	// 	}
-	// };
-
 	const handleSearchSubmit = async () => {
 		if (!chatInput.trim()) return;
 
@@ -122,6 +50,8 @@ function SearchBar({
 
 		setDisableSearch(true);
 		setShowChatView(true);
+
+		const userInput = chatInput.trim();
 		setChatInput("");
 
 		let updatedHistory = [...chatHistory];
@@ -130,13 +60,18 @@ function SearchBar({
 			updatedHistory.push(INITIAL_CHAT_INTERACTION);
 		}
 
-		const newUserMessage = { role: "user", content: chatInput };
+		const newUserMessage = { role: "user", content: userInput };
 		updatedHistory.push(newUserMessage);
 
 		setChatHistory(updatedHistory);
 
 		// either clear chat text, or something
+		await handleQuery(updatedHistory, userInput);
 
+		setDisableSearch(false);
+	};
+
+	async function handleQuery(updatedHistory, userInput) {
 		const response = await fetch("/api/chat", {
 			method: "POST",
 			headers: {
@@ -165,6 +100,12 @@ function SearchBar({
 				partialChunk += chunk;
 				setChatText((prev) => prev + chunk);
 			}
+
+			// if we see the words </think> then clear the chat text
+			if (partialChunk.includes("</think>")) {
+				setChatText("");
+				partialChunk = "";
+			}
 		}
 
 		setChatHistory((prev) => [
@@ -172,17 +113,36 @@ function SearchBar({
 			{ role: "assistant", content: partialChunk },
 		]);
 
+		const functionCallRegex = /<functioncall>(.*?)<\/functioncall>/;
+		const functionCallMatch = functionCallRegex.exec(partialChunk);
+
+		if (!functionCallMatch) {
+			setDisableSearch(false);
+			return;
+		}
+
 		// make a post request to http://localhost:8080/get_segment using the chat text
 		try {
-			// extract <functioncall> {"name": "search", "arguments": {"query": "this work"}} </functioncall>
-
-			const functionCallRegex = /<functioncall>(.*?)<\/functioncall>/g;
-			const functionCallMatch = functionCallRegex.exec(partialChunk);
-
 			// extract the query from the function call
-			const queryRegex = /"query": "(.*?)"/g;
-			const queryMatch = queryRegex.exec(functionCallMatch[1]);
-			const query = queryMatch[1];
+
+			const functionCallMatchCleaned = functionCallMatch[1].replace(
+				/\\"/g,
+				'"'
+			);
+
+			console.log("Function Call Match Cleaned:", functionCallMatchCleaned);
+
+			const regex = /\{"query":\s*"([^"]+)"/;
+			const match = regex.exec(functionCallMatchCleaned);
+
+			console.log("Match:", match);
+
+			if (!match) {
+				setDisableSearch(false);
+				return;
+			}
+
+			const query = match[1];
 
 			console.log("Query:", query);
 
@@ -201,15 +161,34 @@ function SearchBar({
 				console.error("Segment fetch failed");
 			} else {
 				const data = await segmentResponse.json();
+
 				console.log("Document Segments:", data.document_segments);
 				setDocumentSegments(data.document_segments);
+
+				const documentText = data.document_segments
+					.map((segment) => segment.text)
+					.join("\n\n");
+
+				var newMessage = {
+					role: "user",
+					content:
+						user_context +
+						user_input_pre_prompt +
+						documentText +
+						user_input_post_prompt +
+						userInput,
+				};
+
+				updatedHistory.push(newMessage);
+				setChatHistory(updatedHistory);
+				setChatText("");
+
+				await handleQuery(updatedHistory, userInput);
 			}
 		} catch (error) {
 			console.error("Error in segment fetch:", error);
 		}
-
-		setDisableSearch(false);
-	};
+	}
 
 	return (
 		<div style={{ position: "relative", width: "100%" }}>
